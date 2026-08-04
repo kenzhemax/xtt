@@ -1,0 +1,33 @@
+# Runs the xtt feature suite on the abaplint transpiler - no SAP system.
+# Harness: https://github.com/kenzhemax/xtt-ci (test scenarios, build pipeline).
+# The suite exercises the engine end-to-end on the demo templates in src/demo:
+# trees + aggregation, formulas, direction=column, docx, images.
+name: transpiler suite
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout test harness
+        uses: actions/checkout@v4
+        with:
+          repository: kenzhemax/xtt-ci
+      - name: checkout this xtt revision
+        uses: actions/checkout@v4
+        with:
+          path: deps/xtt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run deps
+      - run: npm run build
+      - name: run xtt feature suite
+        run: |
+          npm run suite | tee suite.log
+          grep -q "ALL XTT SUITE TESTS PASSED" suite.log
