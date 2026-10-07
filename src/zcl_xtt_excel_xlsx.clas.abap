@@ -521,6 +521,13 @@ METHOD cell_read_xml.
       ls_cell->c_value = l_val. " <si> tag get_without_t(  ).
       ls_cell->c_type  = 's'.
 
+    WHEN 'str'.
+      " @lcl_test=>str_without_formula( ) SheetJS writes text as <c t="str"><v>text</v></c>
+      ls_cell->c_value = l_val.
+      IF ls_cell->c_formula IS INITIAL.
+        ls_cell->c_type = 's'.
+      ENDIF.
+
     WHEN OTHERS.
       ls_cell->c_value = l_val.
 
